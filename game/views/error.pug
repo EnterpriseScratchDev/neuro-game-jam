@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  h2 Someone tell EnterpriseScratchDev there's a problem with his code
+  h3= message
+  h4= error.status
+  pre #{error.stack}

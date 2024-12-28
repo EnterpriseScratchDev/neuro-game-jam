@@ -1,0 +1,38 @@
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  background-color: black;
+  color: #58cd4d;
+  font-family: 'Courier New', monospace;
+}
+
+#terminal {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  background-color: black; /* Match terminal background */
+  padding: 10px;
+}
+
+.prompt {
+  color: #58cd4d; /* Match terminal text color */
+  font-family: 'Courier New', monospace;
+  user-select: none;
+  user-focus-key: default;
+}
+
+#user-input {
+  border: none;
+  background-color: black;
+  color: #58cd4d;
+  font-family: 'Courier New', monospace;
+  flex-grow: 1; /* Ensures input takes available space */
+  outline: none; /* Removes default browser outline */
+}
