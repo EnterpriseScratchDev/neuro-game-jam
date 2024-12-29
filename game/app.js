@@ -7,7 +7,7 @@ const WebSocket = require("ws");
 
 const {config} = require("./lib/config")
 
-const path = require("node:path");
+const path = require("node:path").posix;
 
 const fs = require('fs')
 
@@ -54,7 +54,6 @@ wss.on("listening", () => {
     console.info(`WebSocketServer is listening at ws://localhost:${config.serverPort}`);
 });
 
-path.sep = "/";
 const vfsJsonStr = fs
     // Read vfs.json to a string
     .readFileSync("./lib/vfs.json").toString()

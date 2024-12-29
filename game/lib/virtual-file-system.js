@@ -1,5 +1,4 @@
-const _path = require("path")
-_path.sep = "/";
+const _path = require("path").posix;
 
 /**
  * A file in a virtual file system.
