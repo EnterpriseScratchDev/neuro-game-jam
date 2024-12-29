@@ -55,7 +55,11 @@ wss.on("listening", () => {
 });
 
 path.sep = "/";
-const vfsJsonStr = fs.readFileSync("./lib/vfs.json").toString();
+const vfsJsonStr = fs
+    // Read vfs.json to a string
+    .readFileSync("./lib/vfs.json").toString()
+    // Remove comment lines
+    .replace(/\/\/.*$/gm, "").trim();
 const vfs = VFileSystem.fromJsonString(vfsJsonStr);
 
 /**
@@ -186,9 +190,27 @@ function handleCommand(message) {
             }
             break;
         case "ls":
-            const curDir = vfs.getCurrentDirectory();
-            result =  `Directories: ${Array.from(Object.keys(curDir.directories)).join("  ")}<br>`;
-            // result += `Files: ${Array.from(curDir.files.keys()).join("  ")}`;
+            const curDir = vfs.curDir;
+            result =  `ls: ${Array.from(Object.keys(curDir.children)).join("  ")}`;
+            break;
+        case "open":
+            if (argc !== 1) {
+                result = "open: expected one argument";
+            } else {
+                let filePath = tokens[1];
+                if (filePath.startsWith("/")) {
+                    filePath = path.normalize(filePath);
+                } else {
+                    filePath = path.join(vfs.curPath, path.normalize(filePath));
+                }
+                try {
+                    const file = vfs.getFile(filePath);
+                    // TODO: Display file contents in a better way
+                    result = file.content;
+                } catch (e) {
+                    result = `open: ${e.message}`
+                }
+            }
             break;
         default:
             result = `${command}: command not found`;
