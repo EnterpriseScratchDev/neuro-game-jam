@@ -32,10 +32,8 @@ input.addEventListener("keydown", (event) => {
     }
 });
 
-document.addEventListener("click", (event) => {
-    if (event.target !== input) {
-        input.focus();
-    }
+document.getElementById("input-container").addEventListener("click", (event) => {
+    input.focus();
 });
 
 
