@@ -134,6 +134,7 @@ function handleMessage(message) {
 function printMessage(message) {
     console.assert(typeof message === "string", `printMessage() expects a string argument`);
     terminal.innerHTML += `<div>${message}</div>`;
+    scrollToBottom();
 }
 
 /**
@@ -143,6 +144,7 @@ function printMessage(message) {
 function printError(errorMessage) {
     console.assert(typeof errorMessage === "string", `printError() expects a string argument`);
     terminal.innerHTML += `<div>[ERROR] ${errorMessage}</div>`;
+    scrollToBottom();
 }
 
 /**
@@ -154,4 +156,8 @@ function transferStateFromServer(transferStateMessage) {
         console.assert(message.command !== "transfer-state", "A \"transfer-state\" message cannot contain an additional \"transfer-state\" message");
         handleMessage(message);
     }
+}
+
+function scrollToBottom() {
+    terminal.scrollTop = terminal.scrollHeight;
 }
