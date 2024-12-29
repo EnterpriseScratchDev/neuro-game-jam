@@ -211,7 +211,7 @@ class VFileSystem {
         if (!child) {
             throw new VFileSystemError(`The file "${fileName}" does not exist in the directory "${dirPath}"`);
         } else if (child.type === "directory") {
-            throw new VFileSystemError(`The path "${fileName}" points to a directory, not a file"`);
+            throw new VFileSystemError(`The path "${fileName}" points to a directory, not a file`);
         } else {
             return child;
         }
