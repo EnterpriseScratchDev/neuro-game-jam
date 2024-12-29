@@ -125,6 +125,8 @@ async function handleMessage(message) {
 
     switch (message.command) {
         case "cmd/invocation":
+            // The message had a valid command, so add it to the game state
+            messages.push(message);
             // Relay the message to all clients (including the one that originally sent it)
             sendToAllWebSockets(JSON.stringify(message));
 
@@ -138,9 +140,6 @@ async function handleMessage(message) {
             console.error(`Received message with unknown command "${message.command}"`);
             return;
     }
-
-    // The message had a valid command, so add it to the game state
-    messages.push(message);
 }
 
 /** @param {CommandInvovationMessage} message */
@@ -164,7 +163,7 @@ function handleCommand(message) {
             break;
         case "help":
             // TODO: help command
-            result = "available commands: pwd, cd, ls, open";
+            result = "available commands: help, pwd, cd, ls, open; type help &lt;command&gt; for information";
             break;
         case "pwd":
             result = vfs.curPath;
@@ -190,7 +189,7 @@ function handleCommand(message) {
             break;
         case "ls":
             const curDir = vfs.curDir;
-            result =  `ls: ${Array.from(Object.keys(curDir.children)).join("  ")}`;
+            result = `ls: ${Array.from(Object.keys(curDir.children)).join("  ")}`;
             break;
         case "open":
             if (argc !== 1) {
@@ -204,10 +203,12 @@ function handleCommand(message) {
                 }
                 try {
                     const file = vfs.getFile(filePath);
-                    sendToAllWebSockets(JSON.stringify({
+                    const resultMessage = {
                         command: "display-file",
                         file: file
-                    }));
+                    };
+                    messages.push(resultMessage);
+                    sendToAllWebSockets(JSON.stringify(resultMessage));
                     result = null;
                 } catch (e) {
                     result = `open: ${e.message}`
@@ -219,10 +220,12 @@ function handleCommand(message) {
     }
 
     if (result) {
-        sendToAllWebSockets(JSON.stringify({
+        const resultMessage = {
             command: "cmd/result",
             msg: result || ""
-        }));
+        };
+        messages.push(resultMessage);
+        sendToAllWebSockets(JSON.stringify(resultMessage));
     }
 
 }
