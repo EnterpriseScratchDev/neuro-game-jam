@@ -5,7 +5,6 @@ const input = document.getElementById("user-input");
 console.assert(input, "user-input element not found");
 
 
-
 const wsAddress = `ws://localhost:${window.location.port}`;
 /** @type {WebSocket} */
 let ws;
@@ -32,6 +31,13 @@ input.addEventListener("keydown", (event) => {
         });
     }
 });
+
+document.addEventListener("click", (event) => {
+    if (event.target !== input) {
+        input.focus();
+    }
+});
+
 
 function connectToWebSocket() {
     try {
@@ -121,6 +127,10 @@ function handleMessage(message) {
             terminal.innerHTML = "";
             transferStateFromServer(message);
             break;
+        case "display-file":
+            console.assert(typeof message.file === "object", "Expected message with \"display-file\" command to have an object property called \"file\"");
+            handleDisplayFile(message.file);
+            break;
         default:
             console.error(`Unrecognized command "${command}"`);
             break;
@@ -133,7 +143,9 @@ function handleMessage(message) {
  */
 function printMessage(message) {
     console.assert(typeof message === "string", `printMessage() expects a string argument`);
-    terminal.innerHTML += `<div>${message}</div>`;
+    const newDiv = document.createElement("div");
+    newDiv.innerText = message;
+    terminal.appendChild(newDiv);
     scrollToBottom();
 }
 
@@ -143,7 +155,9 @@ function printMessage(message) {
  */
 function printError(errorMessage) {
     console.assert(typeof errorMessage === "string", `printError() expects a string argument`);
-    terminal.innerHTML += `<div>[ERROR] ${errorMessage}</div>`;
+    const newDiv = document.createElement("div");
+    newDiv.innerText = `[ERROR] ${errorMessage}`;
+    terminal.appendChild(newDiv);
     scrollToBottom();
 }
 
@@ -158,6 +172,40 @@ function transferStateFromServer(transferStateMessage) {
     }
 }
 
+/**
+ *
+ * @param {VFile} file
+ */
+function handleDisplayFile(file) {
+    switch (file.contentType) {
+        case "descriptive":
+        case "text":
+            // terminal.innerHTML += `<div class="terminal-card"><header>${file.name}</header><div>${file.content}</div></div>`
+            const outerDiv = document.createElement("div");
+            outerDiv.className = "terminal-card";
+            const header = document.createElement("header");
+            header.innerText = file.name;
+            if (file.size) {
+                header.innerText += ` (${file.size})`;
+            }
+            outerDiv.appendChild(header);
+            const innerDiv = document.createElement("div");
+            innerDiv.innerText = file.content;
+            outerDiv.appendChild(innerDiv);
+            terminal.appendChild(outerDiv);
+            break;
+        default:
+            console.error(`Unrecognized file contentType \"${file.contentType}\"; rendering the file as plain text`);
+            const newDiv = document.createElement("div");
+            newDiv.innerText = file.content;
+            terminal.appendChild(newDiv);
+            break;
+    }
+    scrollToBottom();
+}
+
 function scrollToBottom() {
     terminal.scrollTop = terminal.scrollHeight;
 }
+
+

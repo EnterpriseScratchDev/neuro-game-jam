@@ -1,9 +1,14 @@
+:root {
+  --background-color: black;
+  --font-color: #58cd4d; /* hacker-man green */
+}
+
 body {
   display: flex;
   flex-direction: column;
   height: 100vh;
   margin: 0;
-  background-color: black;
+  background-color: var(--background-color);
   color: #58cd4d;
   font-family: 'Courier New', monospace;
 }
@@ -14,15 +19,23 @@ body {
   padding: 10px;
 }
 
+.terminal-card > header {
+  padding: 0 0
+}
+
+.terminal-card > div:first-of-type {
+  padding: 0.25em 0.25em
+}
+
 .input-container {
   display: flex;
   align-items: center;
-  background-color: black; /* Match terminal background */
+  background-color: var(--background-color); /* Match terminal background */
   padding: 10px;
 }
 
 .prompt {
-  color: #58cd4d; /* Match terminal text color */
+  color: var(--font-color); /* Match terminal text color */
   font-family: 'Courier New', monospace;
   user-select: none;
   user-focus-key: default;
@@ -31,7 +44,7 @@ body {
 #user-input {
   border: none;
   background-color: black;
-  color: #58cd4d;
+  color: var(--font-color);
   font-family: 'Courier New', monospace;
   flex-grow: 1; /* Ensures input takes available space */
   outline: none; /* Removes default browser outline */

@@ -157,7 +157,7 @@ function handleCommand(message) {
     const command = tokens[0];
     const argc = tokens.length - 1;
 
-    let result;
+    let result = "";
     switch (command) {
         case "":
             result = "";
@@ -204,8 +204,11 @@ function handleCommand(message) {
                 }
                 try {
                     const file = vfs.getFile(filePath);
-                    // TODO: Display file contents in a better way
-                    result = file.content;
+                    sendToAllWebSockets(JSON.stringify({
+                        command: "display-file",
+                        file: file
+                    }));
+                    result = null;
                 } catch (e) {
                     result = `open: ${e.message}`
                 }
@@ -215,10 +218,13 @@ function handleCommand(message) {
             result = `${command}: command not found; try typing "help"`;
     }
 
-    sendToAllWebSockets(JSON.stringify({
-        command: "cmd/result",
-        msg: result || ""
-    }));
+    if (result) {
+        sendToAllWebSockets(JSON.stringify({
+            command: "cmd/result",
+            msg: result || ""
+        }));
+    }
+
 }
 
 /**

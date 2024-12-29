@@ -49,11 +49,17 @@
  */
 
 /**
- * Transfer the terminal state from the server to a client.
- *
+ * TODO: Handle text entry
  * @typedef TextEntryMessage
  * @extends BaseMessage
  * @property {"text-entry"} command
  * @property {?string} prompt
  * @property {?string} content
+ */
+
+/**
+ * @typedef DisplayFileMessage
+ * @extends BaseMessage
+ * @property {"display-file"} command
+ * @property {VFile} file the file to display
  */
