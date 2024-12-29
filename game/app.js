@@ -5,15 +5,17 @@ const http = require("http");
 const bodyParser = require("body-parser");
 const WebSocket = require("ws");
 
-const app = express();
-const hostName = "localhost";
-const port = 3001;
+const {config} = require("./lib/config")
 
 const path = require("node:path");
 
 const fs = require('fs')
 
 const {VFileSystem, VFileSystemError} = require("./lib/virtual-file-system");
+
+const app = express();
+const hostName = "localhost";
+app.set("port", config.serverPort);
 
 // Set Pug as the view engine
 app.set("view engine", "pug");
@@ -27,7 +29,7 @@ app.use("/css/terminal.css", express.static("./node_modules/terminal.css/dist/te
 
 // Routes
 app.get("/", (req, res) => {
-    res.render("index", {username: "Player1"});
+    res.render("index");
 });
 
 const server = http.createServer(app);
@@ -49,7 +51,7 @@ messages.push({
 });
 
 wss.on("listening", () => {
-    console.info("WebSocketServer is listening");
+    console.info(`WebSocketServer is listening at ws://localhost:${config.serverPort}`);
 });
 
 path.sep = "/";
@@ -269,8 +271,28 @@ app.post("/command", (req, res) => {
 });
 
 // Start the server
-server.listen(port, hostName, () => {
-    console.log(`Game running at http://${hostName}:${port}`);
+server.listen(config.serverPort, hostName, () => {
+    console.log(`Game running at http://${hostName}:${config.serverPort}`);
 });
+
+server.on("error", (error) => {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(`Port ${config.serverPort} is already in use. If necessary, the process can be terminated as follows: npx kill-port ${config.serverPort}`);
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+})
 
 module.exports = app;

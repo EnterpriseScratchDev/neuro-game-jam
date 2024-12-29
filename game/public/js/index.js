@@ -1,10 +1,12 @@
 // Client-side JavaScript for interactions
-const terminal = document.getElementById('terminal');
+const terminal = document.getElementById("terminal");
 console.assert(terminal, "terminal element not found");
-const input = document.getElementById('user-input');
+const input = document.getElementById("user-input");
 console.assert(input, "user-input element not found");
 
-const wsAddress = 'ws://localhost:3000';
+
+
+const wsAddress = `ws://localhost:${window.location.port}`;
 /** @type {WebSocket} */
 let ws;
 
@@ -13,7 +15,7 @@ connectToWebSocket();
 input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         if (!ws) {
-            console.debug("WebSocket not yet connected")
+            console.debug("WebSocket not yet connected");
             return;
         }
 
@@ -109,7 +111,7 @@ function handleMessage(message) {
     switch (command) {
         case "cmd/invocation":
             console.assert(typeof message.msg === "string", "Expected message with \"cmd/invocation\" command to have a string property called \"msg\"");
-            terminal.innerHTML += `<div>&gt;&nbsp;${message.msg}</div>`
+            terminal.innerHTML += `<div>&gt;&nbsp;${message.msg}</div>`;
             break;
         case "cmd/result":
             console.assert(typeof message.msg === "string", "Expected message with \"cmd/result\" command to have a string property called \"msg\"");
@@ -135,7 +137,7 @@ function handleMessage(message) {
  */
 function printMessage(message) {
     console.assert(typeof message === "string", `printMessage() expects a string argument`);
-    terminal.innerHTML += `<div>${message}</div>`
+    terminal.innerHTML += `<div>${message}</div>`;
 }
 
 /**
@@ -144,7 +146,7 @@ function printMessage(message) {
  */
 function printError(errorMessage) {
     console.assert(typeof errorMessage === "string", `printError() expects a string argument`);
-    terminal.innerHTML += `<div>[ERROR] ${errorMessage}</div>`
+    terminal.innerHTML += `<div>[ERROR] ${errorMessage}</div>`;
 }
 
 /**
