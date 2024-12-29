@@ -7,6 +7,7 @@
     "package": "pkg ./app.js --target node14-win-x64,node14-macos-x64,node14-linux-x64"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
     "pug": "^3.0.3",

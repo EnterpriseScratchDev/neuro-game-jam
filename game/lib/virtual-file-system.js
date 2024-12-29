@@ -1,4 +1,19 @@
+// fs is only used to load the VFS JSON Schema
+const fs = require("node:fs");
 const _path = require("path").posix;
+const {Ajv, ValidateFunction} = require("ajv");
+
+/** @type Ajv */
+const ajv = new Ajv();
+/** @type {ValidateFunction<VDirectory> | null} */
+let vfsValidator = null;
+try {
+    const vfsSchemaStr = fs.readFileSync("./lib/vfs-schema.json").toString();
+    const vfsSchemaObj = JSON.parse(vfsSchemaStr);
+    vfsValidator = ajv.compile(vfsSchemaObj);
+} catch (e) {
+    console.error("Failed to set up validator for Virtual File System JSON Schema", e);
+}
 
 /**
  * A file in a virtual file system.
@@ -202,17 +217,23 @@ class VFileSystem {
         }
     }
 
+    /**
+     *
+     * @param {string} json a JSON string representing the root directory of a virtual file system
+     * @return {VFileSystem | null} the newly created virtual file system or `null` if it couldn't be loaded
+     */
     static fromJsonString(json) {
         try {
-            const obj = JSON.parse(json, (key, value) => {
-                // Exclude comment properties
-                if (key.startsWith("//")) {
-                    return undefined;
+            const obj = JSON.parse(json);
+            if (vfsValidator) {
+                const valid = vfsValidator(obj);
+                if (!valid) {
+                    console.error(`Error validating Virtual File System JSON: ${ajv.errorsText(vfsValidator.errors)}`);
+                    return null;
                 }
-                return value;
-            });
-            console.debug("parsed JSON value:", obj);
-            // TODO: properly validate the loaded object
+            } else {
+                console.warn("Virtual File System validator is not set up, so the loaded JSON will not be validated");
+            }
             return new VFileSystem(obj);
         } catch (e) {
             console.error("Failed to parse VFS from string", e);
