@@ -1,0 +1,23 @@
+{
+  "name": "",
+  "directories": {
+    "home":  {
+      "name": "home",
+      "directories": {
+        "vedal":  {
+          "name": "vedal",
+          "directories": {
+            "downloads":  {
+              "name": "downloads",
+              "directories": {},
+              "files": {}
+            }
+          },
+          "files": {}
+        }
+      },
+      "files": {}
+    }
+  },
+  "files": {}
+}

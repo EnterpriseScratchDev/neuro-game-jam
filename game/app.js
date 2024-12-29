@@ -9,7 +9,11 @@ const app = express();
 const hostName = "localhost";
 const port = 3001;
 
-const path = require('node:path');
+const path = require("node:path");
+
+const fs = require('fs')
+
+const {VFileSystem, VFileSystemError} = require("./lib/virtual-file-system");
 
 // Set Pug as the view engine
 app.set("view engine", "pug");
@@ -28,9 +32,7 @@ app.get("/", (req, res) => {
 
 const server = http.createServer(app);
 /** @type WebSocketServer */
-const wss = new WebSocket.Server({server}, () => {
-    console.log("WSS callback");
-});
+const wss = new WebSocket.Server({server});
 
 /** @type WebSocket[] */
 let wsConnections = [];
@@ -51,9 +53,8 @@ wss.on("listening", () => {
 });
 
 path.sep = "/";
-let curPath = path.normalize("/");
-
-
+const vfsJsonStr = fs.readFileSync("./lib/vfs.json").toString();
+const vfs = VFileSystem.fromJsonString(vfsJsonStr);
 
 /**
  * @callback
@@ -129,7 +130,7 @@ async function handleMessage(message) {
             console.error(`The server received a \"cmd/result\" message; this command should only be received by clients`);
             break;
         default:
-            console.error(`Received message with unknown command "${message.command}"`)
+            console.error(`Received message with unknown command "${message.command}"`);
             return;
     }
 
@@ -158,21 +159,34 @@ function handleCommand(message) {
             break;
         case "help":
             // TODO: help command
-            result = "help is not yet implemented"
+            result = "help is not yet implemented";
             break;
         case "pwd":
-            result = curPath;
+            result = vfs.curPath;
             break;
         case "cd":
             if (argc === 0) {
                 // Do nothing
-                result = `cd: ${curPath}`;
+                result = `cd: ${vfs.curPath}`;
             } else if (argc === 1) {
-                handleChangeDirectory(tokens[1]);
-                result = `cd: ${curPath}`;
+                try {
+                    handleChangeDirectory(tokens[1]);
+                    result = `cd: ${vfs.curPath}`;
+                } catch (e) {
+                    if (e instanceof VFileSystemError) {
+                        result = `cd: ${e.message}`;
+                    } else {
+                        throw e; // rethrow other errors
+                    }
+                }
             } else {
                 result = "cd: expected one argument";
             }
+            break;
+        case "ls":
+            const curDir = vfs.getCurrentDirectory();
+            result =  `Directories: ${Array.from(Object.keys(curDir.directories)).join("  ")}<br>`;
+            // result += `Files: ${Array.from(curDir.files.keys()).join("  ")}`;
             break;
         default:
             result = `${command}: command not found`;
@@ -198,17 +212,10 @@ function handleChangeDirectory(directory) {
     if (directory.startsWith("/")) {
         newPath = path.normalize(directory);
     } else {
-        newPath = path.join(curPath, path.normalize(directory));
+        newPath = path.join(vfs.curPath, path.normalize(directory));
     }
-    console.debug(`handleChangeDirectory() >> trying to change from from "${curPath}" to ${newPath}`);
-}
-
-/**
- *
- * @param {string} newPath
- */
-function changeDirectory(newPath) {
-
+    console.debug(`handleChangeDirectory() >> trying to change from from "${vfs.curPath}" to ${newPath}`);
+    vfs.changeDirectory(newPath);
 }
 
 /**
@@ -216,14 +223,14 @@ function changeDirectory(newPath) {
  * @param {string} message
  */
 function sendToAllWebSockets(message) {
-    assert(typeof message === "string", "sendToAllWebSockets() expects a string argument")
+    assert(typeof message === "string", "sendToAllWebSockets() expects a string argument");
     console.debug(`Sending message: "${message}"`);
     for (const ws of wsConnections) {
         ws.send(message, (err) => {
             if (err) {
                 console.error("Error sending message to WebSocket connection:", err);
             }
-        })
+        });
     }
 }
 
@@ -235,7 +242,7 @@ function resetGame() {
     /** @type ResetMessage */
     const message = {
         command: "reset"
-    }
+    };
     const messageStr = JSON.stringify(message);
     sendToAllWebSockets(messageStr);
 }

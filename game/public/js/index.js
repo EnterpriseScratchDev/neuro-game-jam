@@ -4,7 +4,7 @@ console.assert(terminal, "terminal element not found");
 const input = document.getElementById('user-input');
 console.assert(input, "user-input element not found");
 
-const wsAddress = 'ws://localhost:3001';
+const wsAddress = 'ws://localhost:3000';
 /** @type {WebSocket} */
 let ws;
 
