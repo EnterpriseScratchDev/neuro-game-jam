@@ -202,15 +202,6 @@ class VFileSystem {
         }
     }
 
-    /**
-     * Retrieve the current directory.
-     *
-     * @return {VDirectory}
-     */
-    getCurrentDirectory() {
-        return this.getDir(this.curPath);
-    }
-
     static fromJsonString(json) {
         try {
             const obj = JSON.parse(json, (key, value) => {
