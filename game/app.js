@@ -165,7 +165,7 @@ function handleCommand(message) {
             break;
         case "help":
             // TODO: help command
-            result = "help is not yet implemented";
+            result = "available commands: pwd, cd, ls, open";
             break;
         case "pwd":
             result = vfs.curPath;
@@ -213,7 +213,7 @@ function handleCommand(message) {
             }
             break;
         default:
-            result = `${command}: command not found`;
+            result = `${command}: command not found; try typing "help"`;
     }
 
     sendToAllWebSockets(JSON.stringify({
