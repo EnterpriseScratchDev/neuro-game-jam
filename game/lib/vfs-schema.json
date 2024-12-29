@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VDirectory Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of this directory; should only be empty for the root directory",
+      "pattern": "^[^/]*$"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["directory"],
+      "description": "Discriminator for files and directories"
+    },
+    "children": {
+      "type": "object",
+      "description": "A mapping of child names to either VFile or VDirectory",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The name of this file; includes the extension, if there is one; should not contain `/` characters",
+                "pattern": "^[^/]*$"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["file"],
+                "description": "Discriminator for files and directories"
+              },
+              "contentType": {
+                "type": "string",
+                "enum": ["text", "descriptive", "html"],
+                "description": "The type of data this file holds"
+              },
+              "content": {
+                "type": "string",
+                "description": "The content of this file"
+              },
+              "size": {
+                "type": "string",
+                "description": "A string representation of the size of a file"
+              }
+            },
+            "required": ["name", "type", "contentType", "content", "size"],
+            "additionalProperties": false
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    }
+  },
+  "required": ["name", "type", "children"],
+  "additionalProperties": false
+}
