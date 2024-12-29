@@ -33,10 +33,6 @@ input.addEventListener("keydown", (event) => {
     }
 });
 
-terminal.addEventListener("click", (event) => {
-    console.debug("moving focus back to the user-input element");
-});
-
 function connectToWebSocket() {
     try {
         ws = new WebSocket(wsAddress);
