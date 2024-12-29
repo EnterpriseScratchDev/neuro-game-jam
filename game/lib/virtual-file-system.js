@@ -1,4 +1,5 @@
 const _path = require("path")
+_path.sep = "/";
 
 /**
  * A file in a virtual file system.
