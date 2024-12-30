@@ -279,27 +279,6 @@ function resetGame() {
     sendToAllWebSockets(messageStr);
 }
 
-app.post("/command", (req, res) => {
-    const {command} = req.body;
-    let response;
-
-    switch (command.toLowerCase()) {
-        case "look":
-            response = "You see a dark forest surrounding you.";
-            break;
-        case "help":
-            response = "Available commands: look, help, quit";
-            break;
-        case "quit":
-            response = "Goodbye!";
-            break;
-        default:
-            response = "Unknown command.";
-    }
-
-    res.send(response);
-});
-
 // Start the server
 server.listen(config.serverPort, hostName, () => {
     console.log(`Game running at http://${hostName}:${config.serverPort}`);
