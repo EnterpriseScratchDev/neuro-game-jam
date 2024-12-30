@@ -43,6 +43,10 @@
               "size": {
                 "type": "string",
                 "description": "A string representation of the size of a file"
+              },
+              "password": {
+                "type": "string",
+                "description": "The password protecting this file"
               }
             },
             "required": ["name", "type", "contentType", "content", "size"],

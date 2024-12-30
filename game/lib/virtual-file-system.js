@@ -22,25 +22,28 @@ try {
  *                                                     `"html"` files should have their content rendered as html
  * @prop {string} content the content of this file
  * @prop {string} size a string representation of the size of a file, such as `"6.1 KB"` or `"1.5 GB"`; this can be calculated automatically for `"text"` files
+ * @prop {string | null} password the password locking this file
  * @see newTextFile
  * @see newDescriptiveFile
  */
 class VFile {
-    constructor(name) {
+    constructor(name, password = null) {
         console.assert(typeof name === "string", "name must be a string");
         console.assert(!name.includes("/"), "name must not contain \"/\" characters");
         this.name = name;
         this.type = "file";
+        this.password = password;
     }
 
     /**
      * Create a new virtual text file.
-     * @param name the name of the file
-     * @param content the text contents of the file
+     * @param {string} name the name of the file
+     * @param {string} content the text contents of the file
+     * @param {string | null} password the password locking this file
      * @returns {VFile} the newly created file
      */
-    static newTextFile(name, content) {
-        const file = new VFile(name);
+    static newTextFile(name, content, password = null) {
+        const file = new VFile(name, password);
         file.contentType = "text";
         console.assert(content && typeof content === "string", "content must be a string");
         file.content = content;
@@ -50,13 +53,14 @@ class VFile {
 
     /**
      * Create a new virtual descriptive file.
-     * @param name the name of the file
-     * @param description a plaintext description of what this file contains
-     * @param size a string representation of the size of this file such as `"6.1 KB"` or `"1.5 GB"`
+     * @param {string} name the name of the file
+     * @param {string} description a plaintext description of what this file contains
+     * @param {string} size a string representation of the size of this file such as `"6.1 KB"` or `"1.5 GB"`
+     * @param {string | null} password the password locking this file
      * @returns {VFile}
      */
-    static newDescriptiveFile(name, description, size) {
-        const file = new VFile(name);
+    static newDescriptiveFile(name, description, size, password = null) {
+        const file = new VFile(name, password);
         file.contentType = "descriptive";
         console.assert(description && typeof description === "string", "description must be a string");
         file.content = description;

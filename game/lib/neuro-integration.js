@@ -34,11 +34,14 @@ const ACTION_LS = {
 
 const ACTION_OPEN = {
     "name": "open_file",
-    "description": "view the contents of a file (may be an absolute or relative path)",
+    "description": "view the contents of a file; 'file' may be an absolute or relative path; 'password' is only necessary if you know a file is password-protected",
     "schema": {
         "type": "object",
         "properties": {
             "file": {
+                "type": "string"
+            },
+            "password": {
                 "type": "string"
             }
         },

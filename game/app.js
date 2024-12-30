@@ -47,12 +47,10 @@ let wsConnections = [];
 /** @type Message[] */
 let messages = [];
 messages.push({
-    command: "cmd/result",
-    msg: "Initiating mainframe connection..."
+    command: "cmd/result", msg: "Initiating mainframe connection..."
 });
 messages.push({
-    command: "cmd/result",
-    msg: "Connection established."
+    command: "cmd/result", msg: "Connection established."
 });
 
 wss.on("listening", () => {
@@ -81,8 +79,7 @@ wss.on("connection", (ws) => {
 
     // Transfer the current state to the client
     const transferStateMessage = JSON.stringify({
-        command: "transfer-state",
-        messages: messages
+        command: "transfer-state", messages: messages
     });
     console.debug("About to transfer state to a new client:", transferStateMessage);
     ws.send(transferStateMessage, (err) => {
@@ -163,9 +160,7 @@ function handleCommand(message, sendToNeuro = true) {
     const argc = tokens.length - 1;
 
     const actionResultMessage = {
-        command: "action/result",
-        game: GAME_NAME,
-        data: {
+        command: "action/result", game: GAME_NAME, data: {
             id: "REPLACE_ME",
             success: false,
             message: "Someone tell EnterpriseScratchDev there's a problem with his code"
@@ -178,8 +173,15 @@ function handleCommand(message, sendToNeuro = true) {
             result = "";
             break;
         case "help":
-            // TODO: help command
-            result = "available commands: help, pwd, cd, ls, open";
+            result += "Commands\n";
+            result += "pwd: Print the name of the working directory\n";
+            result += "└─Usage: pwd\n";
+            result += "cd: Change the working directory\n";
+            result += "└─Usage: cd [dir]\n";
+            result += "ls: List the contents of the working directory\n";
+            result += "└─Usage: ls\n";
+            result += "open: View the contents of a file (password is only for password-protected files)\n";
+            result += "└─Usage: cd [file] [password]";
             break;
         case "pwd":
             result = vfs.curPath;
@@ -225,8 +227,7 @@ function handleCommand(message, sendToNeuro = true) {
             }
             /** @type DisplayDirectoryMessage */
             const resultMessage = {
-                command: "display-dir",
-                contents: dirContents
+                command: "display-dir", contents: dirContents
             };
             messages.push(resultMessage);
             sendToAllWebSockets(JSON.stringify(resultMessage));
@@ -235,31 +236,55 @@ function handleCommand(message, sendToNeuro = true) {
             actionResultMessage.data.message += JSON.stringify(dirContents);
             break;
         case "open":
-            if (argc !== 1) {
-                result = "open: expected one argument";
+            if (argc !== 1 && argc !== 2) {
+                result = "open: expected one or two arguments";
                 actionResultMessage.data.success = false;
-                actionResultMessage.data.message = "open: expected one argument";
+                actionResultMessage.data.message = "open: expected one or two arguments";
             } else {
                 let filePath = tokens[1];
+                let password;
+                if (argc === 2) {
+                    password = tokens[2];
+                }
                 if (filePath.startsWith("/")) {
                     filePath = path.normalize(filePath);
                 } else {
                     filePath = path.join(vfs.curPath, path.normalize(filePath));
                 }
                 try {
+                    let success;
                     const file = vfs.getFile(filePath);
-                    const resultMessage = {
-                        command: "display-file",
-                        file: file
-                    };
+                    if (file.password && !password) {
+                        result = "open: access denied; this file is password-protected";
+                        success = false;
+                    } else if (file.password && file.password.trim().toLowerCase() !== password.trim().toLowerCase()) {
+                        result = "open: access denied; incorrect password";
+                        success = false;
+                    } else {
+                        success = true;
+                    }
+                    let resultMessage;
+                    if (success) {
+                        resultMessage = {
+                            command: "display-file", file: file
+                        };
+                    } else {
+                        resultMessage = {
+                            command: "cmd/result", msg: result
+                        };
+                    }
                     messages.push(resultMessage);
                     sendToAllWebSockets(JSON.stringify(resultMessage));
 
-                    actionResultMessage.data.success = true;
-                    actionResultMessage.data.message = JSON.stringify(file);
+                    actionResultMessage.data.success = success;
+                    if (success) {
+                        actionResultMessage.data.message = JSON.stringify(file);
+                    } else {
+                        actionResultMessage.data.message = result;
+                    }
 
                     if (sendToNeuro) {
-                        neuroIntegration.sendContext(JSON.stringify(file), false);
+                        neuroIntegration.sendContext(actionResultMessage.data.message, false);
                     }
 
                     result = null;
@@ -268,6 +293,8 @@ function handleCommand(message, sendToNeuro = true) {
                     if (sendToNeuro) {
                         neuroIntegration.sendContext(`Error opening file: ${e.message}`, true);
                     }
+                    actionResultMessage.data.success = false;
+                    actionResultMessage.data.message = `Error opening file: ${e.message}`;
                 }
             }
             break;
@@ -277,8 +304,7 @@ function handleCommand(message, sendToNeuro = true) {
 
     if (result) {
         const resultMessage = {
-            command: "cmd/result",
-            msg: result || ""
+            command: "cmd/result", msg: result || ""
         };
         messages.push(resultMessage);
         sendToAllWebSockets(JSON.stringify(resultMessage));
@@ -374,12 +400,8 @@ function handleNeuroMessage(actionMessage) {
     const {id, name} = actionMessage.data;
 
     const resultMessage = {
-        command: "action/result",
-        game: GAME_NAME,
-        data: {
-            id: id,
-            success: true,
-            message: "You enter the command into the terminal and await the result..."
+        command: "action/result", game: GAME_NAME, data: {
+            id: id, success: true, message: "You enter the command into the terminal and await the result..."
         }
     };
 
@@ -406,7 +428,13 @@ function handleNeuroMessage(actionMessage) {
             command = "ls";
             break;
         case "open_file":
-            command = `open ${actionMessage.data?.file || ""}`;
+            command = "open";
+            if (actionMessage.data?.file) {
+                command += " " + actionMessage.data?.file;
+            }
+            if (actionMessage.data?.password) {
+                command += " " + actionMessage.data?.password;
+            }
             break;
         default:
             resultMessage.data.success = false;
@@ -415,18 +443,19 @@ function handleNeuroMessage(actionMessage) {
     }
 
     const simulatedMessage = {
-        command: "cmd/invocation",
-        msg: command
+        command: "cmd/invocation", msg: command
     };
     sendToAllWebSockets(JSON.stringify(simulatedMessage));
     messages.push(simulatedMessage);
 
     /** @type ActionResultMessage */
     let actionResultMessage = handleCommand({
-        command: "cmd/invocation",
-        msg: command
+        command: "cmd/invocation", msg: command
     }, false);
-    console.assert(actionResultMessage, "the return value of handleCommand shouldn't be falsy here")
+    if (actionResultMessage.data.message.includes("EnterpriseScratchDev")) {
+        console.error("ERROR HERE");
+    }
+    console.assert(actionResultMessage, "the return value of handleCommand shouldn't be falsy here");
     actionResultMessage.data.id = id;
 
     return actionResultMessage;
