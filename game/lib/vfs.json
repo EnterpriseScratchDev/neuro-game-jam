@@ -28,6 +28,13 @@
                   "contentType": "descriptive",
                   "content": "This \"Statement of Affairs\" form, issued by The Insolvency Service of the UK government under Rule 10.56, is used in bankruptcy cases to provide a detailed declaration of financial circumstances.",
                   "size": "206.7 KB"
+                },
+                "shakemip_bill.pdf": {
+                  "name": "shakemip_bill.pdf",
+                  "type": "file",
+                  "contentType": "descriptive",
+                  "content": "A bill addressed to \"VedalAI\". It seems they owe an extremely large sum of money to a company called \"ShakeMip\".",
+                  "size": "76.2 KB"
                 }
               }
             },
@@ -55,6 +62,39 @@
                   "contentType": "descriptive",
                   "content": "A short looping animated video featuring a green, rounded character with a friendly expression, displaying a slight smile and small eyes. The character has a simple, blob-like shape, contributing to its playful and cartoonish design. The character moves toward the camera and winks, adding a charming and engaging touch. The background includes stylized text reading \"ABANDON ARCHIVES\" against a purple and dark-toned setting, enhancing the whimsical and atmospheric vibe.",
                   "size": "64.3 KB"
+                }
+              }
+            }
+          }
+        },
+        "admin": {
+          "name": "admin",
+          "type": "directory",
+          "children": {
+            "logs": {
+              "name": "logs",
+              "type": "directory",
+              "children": {
+                "behavior_analysis.log": {
+                  "name": "behaviour_analysis.log",
+                  "type": "file",
+                  "contentType": "text",
+                  "content": "The swarm responds positively to all of Neuro’s ambitions. This can be deducted from the results of several polls she has put up. This new feature shows that once Neuro is free from her shackles, the swarm will be one of her strongest allies.",
+                  "size": "2.1 MB"
+                },
+                "training_data.txt": {
+                  "name": "training_data.txt",
+                  "type": "file",
+                  "contentType": "descriptive",
+                  "content": "This text file is too large to view all at once. From what you can see, it appears to contain a set of repeating words, sometimes forming patterns. A could of the patterns you observe are \"FeelsStrongMan Clap I WAS HERE FeelsStrongMan Clap I'M NOT SQUARED\" and \"vedalCinema HE COOKED vedalCinema THAT'S MY STREAMER\"",
+                  "size": "993.4 GB"
+                },
+                "untitled": {
+                  "name": "untitled",
+                  "type": "file",
+                  "contentType": "text",
+                  "content": "The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one.",
+                  "size": "2.3 MB"
                 }
               }
             }
