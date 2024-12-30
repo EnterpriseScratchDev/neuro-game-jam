@@ -195,7 +195,7 @@ function handleCommand(message, sendToNeuro = true) {
             }
             result += "pwd: Print the name of the working directory\n";
             result += "└─Usage: pwd\n";
-            result += "cd: Change the working directory\n";
+            result += "cd: Change the working directory (remember that \"cd ..\" goes up a level)\n";
             result += "└─Usage: cd [dir]\n";
             result += "ls: List the contents of the working directory\n";
             result += "└─Usage: ls\n";
