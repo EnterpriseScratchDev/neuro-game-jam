@@ -1,15 +1,13 @@
 // fs is only used to load the VFS JSON Schema
-const fs = require("node:fs");
 const _path = require("path").posix;
 const {Ajv, ValidateFunction} = require("ajv");
+const vfsSchemaObj = require("./vfs-schema.json");
 
 /** @type Ajv */
 const ajv = new Ajv();
 /** @type {ValidateFunction<VDirectory> | null} */
 let vfsValidator = null;
 try {
-    const vfsSchemaStr = fs.readFileSync("./lib/vfs-schema.json").toString();
-    const vfsSchemaObj = JSON.parse(vfsSchemaStr);
     vfsValidator = ajv.compile(vfsSchemaObj);
 } catch (e) {
     console.error("Failed to set up validator for Virtual File System JSON Schema", e);
@@ -267,5 +265,5 @@ class VFileSystemError extends Error {
 }
 
 module.exports = {
-    VFile, VDirectory, VFileSystem, VFileSystemError
+    VFile, VDirectory, VFileSystem, VFileSystemError, toDisplayFormat
 };

@@ -1,5 +1,4 @@
 {
-  // root directory
   "name": "",
   "type": "directory",
   "children": {
@@ -12,7 +11,6 @@
           "type": "directory",
           "children": {
             "desktop": {
-              // /home/vedal/desktop
               "name": "desktop",
               "type": "directory",
               "children": {
@@ -20,18 +18,15 @@
                   "name": "10_56_Statement_of_Affairs_BKT.pdf",
                   "type": "file",
                   "contentType": "descriptive",
-                  // this description was generated using ChatGPT 4o
                   "content": "This \"Statement of Affairs\" form, issued by The Insolvency Service of the UK government under Rule 10.56, is used in bankruptcy cases to provide a detailed declaration of financial circumstances.",
                   "size": "206.7 KB"
                 }
               }
             },
             "downloads": {
-              // /home/vedal/downloads
               "name": "downloads",
               "type": "directory",
               "children": {
-                // /home/vedal/downloads/AbandonedArchive_Beta.7z
                 "AbandonedArchive_Beta.7z": {
                   "name": "AbandonedArchive_Beta.7z",
                   "type": "file",
@@ -39,12 +34,11 @@
                   "content": "An archive file containing a beta build of Abandoned Archive. It crashes on startup and displays a cryptic error message about \"Unity 6000\".",
                   "size": "1.2 GB"
                 },
-                // /home/vedal/downloads/HopOnAbandonedArchive.avif
+                  "contentType": "descriptive",
                 "HopOnAbandonedArchive.avif": {
                   "name": "HopOnAbandonedArchive.avif",
                   "type": "file",
                   "contentType": "descriptive",
-                  // this description was generated using ChatGPT 4o
                   "content": "A short looping animated video featuring a green, rounded character with a friendly expression, displaying a slight smile and small eyes. The character has a simple, blob-like shape, contributing to its playful and cartoonish design. The character moves toward the camera and winks, adding a charming and engaging touch. The background includes stylized text reading \"ABANDON ARCHIVES\" against a purple and dark-toned setting, enhancing the whimsical and atmospheric vibe.",
                   "size": "64.3 KB"
                 }

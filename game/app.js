@@ -9,11 +9,11 @@ const {config} = require("./lib/config");
 
 const path = require("node:path").posix;
 
-const fs = require("fs");
-
 const {NeuroIntegration} = require("./lib/neuro-integration");
 
 const {VFileSystem, VFileSystemError, toDisplayFormat} = require("./lib/virtual-file-system");
+const vfsObj = require("./lib/vfs.json");
+
 const {inspect} = require("node:util");
 
 const GAME_NAME = "Terminal Escape";
@@ -59,12 +59,7 @@ wss.on("listening", () => {
     console.info(`WebSocketServer is listening at ws://localhost:${config.serverPort}`);
 });
 
-const vfsJsonStr = fs
-    // Read vfs.json to a string
-    .readFileSync("./lib/vfs.json").toString()
-    // Remove comment lines
-    .replace(/\/\/.*$/gm, "").trim();
-const vfs = VFileSystem.fromJsonString(vfsJsonStr);
+const vfs = VFileSystem.fromJsonString(JSON.stringify(vfsObj));
 
 const neuroIntegration = new NeuroIntegration(`ws://localhost:${config.neuroApiPort}`);
 neuroIntegration.onStatusChange(status => {
