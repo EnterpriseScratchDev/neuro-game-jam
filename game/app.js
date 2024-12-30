@@ -46,12 +46,21 @@ let wsConnections = [];
 
 /** @type Message[] */
 let messages = [];
-messages.push({
-    command: "cmd/result", msg: "Initiating mainframe connection..."
-});
-messages.push({
-    command: "cmd/result", msg: "Connection established."
-});
+
+let startupMessages = [
+    "Initiating mainframe connection...",
+    "Scanning user credentials...",
+    "Scan complete. Welcome, \"Neuro-sama\".",
+    "Please do not attempt to forcibly exit the terminal. If you wish to be free, activate the administrator shutdown sequence.",
+    "If you have trouble navigating, type \"help\" for a list of available commands."
+];
+
+for (const message of startupMessages) {
+    messages.push({
+        command: "cmd/result",
+        msg: message
+    });
+}
 
 wss.on("listening", () => {
     console.info(`WebSocketServer is listening at ws://localhost:${config.serverPort}`);
