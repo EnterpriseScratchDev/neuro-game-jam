@@ -28,9 +28,9 @@ app.set("views", "./views");
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static("public")); // Serve static files (CSS, JS)
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files (CSS, JS)
 
-app.use("/css/terminal.css", express.static("./node_modules/terminal.css/dist/terminal.css"));
+app.use("/css/terminal.css", express.static(path.join(__dirname, "./node_modules/terminal.css/dist/terminal.css")));
 
 // Routes
 app.get("/", (req, res) => {
