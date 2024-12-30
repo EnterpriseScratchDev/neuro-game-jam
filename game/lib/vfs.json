@@ -2,14 +2,6 @@
   "name": "",
   "type": "directory",
   "children": {
-    "super-secret-file.txt": {
-      "name": "super-secret-file.txt",
-      "type": "file",
-      "contentType": "text",
-      "content": "test file content aaaaaaaaaaaaaa",
-      "size": "9999 TB",
-      "password": "hunter2"
-    },
     "home": {
       "name": "home",
       "type": "directory",
