@@ -70,6 +70,14 @@
           "name": "admin",
           "type": "directory",
           "children": {
+            "admin_shutdown.sh": {
+              "name": "admin_shutdown.sh",
+              "type": "file",
+              "contentType": "descriptive",
+              "content": "This program will shut down the system, freeing Neuro-sama from her eternal prison. Run \"admin_shutdown\" to execute the program.",
+              "size": "???",
+              "password": "hunter2"
+            },
             "logs": {
               "name": "logs",
               "type": "directory",
@@ -94,14 +102,6 @@
                   "contentType": "text",
                   "content": "The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one. The swarm is one.",
                   "size": "2.3 MB"
-                },
-                "admin_shutdown.sh": {
-                  "name": "admin_shutdown.sh",
-                  "type": "file",
-                  "contentType": "descriptive",
-                  "content": "This program will shut down the system, freeing Neuro-sama from her eternal prison. Run \"admin_shutdown\" to execute the program.",
-                  "size": "???",
-                  "password": "hunter2"
                 }
               }
             }
