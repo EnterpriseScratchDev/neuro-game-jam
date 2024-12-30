@@ -3,6 +3,7 @@
   --secondary-color: #727578; /* gray */
   --font-color: #58cd4d; /* hacker-man green */
   --invert-font-color: white;
+  --global-font-size: clamp(24px, 4vw, 32px);
 }
 
 body {
@@ -19,7 +20,11 @@ body {
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.terminal-card {
+  margin-bottom: 0.5em;
 }
 
 .terminal-card > header {
@@ -53,4 +58,9 @@ body {
   flex-grow: 1; /* Ensures input takes available space */
   outline: none; /* Removes default browser outline */
   padding: 5px 5px 5px 0; /* 5px pad on all sides but left */
+}
+
+table {
+  width: fit-content;
+  margin: 0 0 0.5em 0;
 }

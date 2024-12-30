@@ -242,6 +242,23 @@ class VFileSystem {
     }
 }
 
+/**
+ * @param {VFile | VDirectory} file can be a file or a directory
+ * @return {VDirDisplayFormat}
+ */
+function toDisplayFormat(file) {
+    console.assert(file, "the file argument is required");
+    const temp = {
+        name: file.name,
+        type: file.type,
+        size: null
+    }
+    if (file.size) {
+        temp.size = file.size;
+    }
+    return temp;
+}
+
 class VFileSystemError extends Error {
     constructor(message) {
         super(message);

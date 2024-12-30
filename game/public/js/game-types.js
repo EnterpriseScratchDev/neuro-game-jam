@@ -63,3 +63,18 @@
  * @property {"display-file"} command
  * @property {VFile} file the file to display
  */
+
+/**
+ * A limited model for both {@link VFile} and {@link VDirectory}.
+ * @typedef VDirDisplayFormat
+ * @prop {"file" | "directory"} type
+ * @prop {string} name
+ * @prop {?string} size
+ */
+
+/**
+ * @typedef DisplayDirectoryMessage
+ * @extends BaseMessage
+ * @property {"display-dir"} command
+ * @property {VDirDisplayFormat[]} contents the contents of the directory
+ */

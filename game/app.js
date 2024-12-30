@@ -13,7 +13,7 @@ const fs = require("fs");
 
 const {NeuroIntegration} = require("./lib/neuro-integration");
 
-const {VFileSystem, VFileSystemError} = require("./lib/virtual-file-system");
+const {VFileSystem, VFileSystemError, toDisplayFormat} = require("./lib/virtual-file-system");
 const {inspect} = require("node:util");
 
 const GAME_NAME = "Terminal Escape";
@@ -218,22 +218,23 @@ function handleCommand(message, sendToNeuro = true) {
             break;
         case "ls":
             const curDir = vfs.curDir;
-            result = `ls: ${Array.from(Object.keys(curDir.children)).join("  ")}`;
+            // result = `ls: ${Array.from(Object.keys(curDir.children)).join("  ")}`;
+            result = null;
             const dirContents = [];
             for (const prop in curDir.children) {
                 if (Object.prototype.hasOwnProperty.call(curDir.children, prop)) {
                     /** @type {VFile | VDirectory} */
                     const child = curDir.children[prop];
-                    const temp = {
-                        type: child.type,
-                        name: child.name
-                    };
-                    if (child.type === "file") {
-                        temp.size = child.size;
-                    }
-                    dirContents.push(temp);
+                    dirContents.push(toDisplayFormat(child));
                 }
             }
+            /** @type DisplayDirectoryMessage */
+            const resultMessage = {
+                command: "display-dir",
+                contents: dirContents
+            };
+            messages.push(resultMessage);
+            sendToAllWebSockets(JSON.stringify(resultMessage));
             actionResultMessage.data.success = true;
             actionResultMessage.data.message = "The following JSON represents the contents of the working directory. Remember that you can use `cd` to change directories and `open` to view a file's contents.\n";
             actionResultMessage.data.message += JSON.stringify(dirContents);

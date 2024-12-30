@@ -129,6 +129,10 @@ function handleMessage(message) {
             console.assert(typeof message.file === "object", "Expected message with \"display-file\" command to have an object property called \"file\"");
             handleDisplayFile(message.file);
             break;
+        case "display-dir":
+            console.assert(message.contents, "Expected message with \"display-dir\" command to have a property called \"contents\"");
+            handleDisplayDirectory(message.contents);
+            break;
         default:
             console.error(`Unrecognized command "${command}"`);
             break;
@@ -171,7 +175,6 @@ function transferStateFromServer(transferStateMessage) {
 }
 
 /**
- *
  * @param {VFile} file
  */
 function handleDisplayFile(file) {
@@ -199,6 +202,44 @@ function handleDisplayFile(file) {
             terminal.appendChild(newDiv);
             break;
     }
+    scrollToBottom();
+}
+
+/**
+ * @param {VDirDisplayFormat[]} dirContents
+ */
+function handleDisplayDirectory(dirContents) {
+    dirContents.sort((a, b) => a.name.localeCompare(b.name));
+    const outerDiv = document.createElement("div");
+    const table = document.createElement("table");
+
+    const headerRow = document.createElement("tr");
+    const nameHeader = document.createElement("th");
+    nameHeader.innerText = "name";
+    headerRow.appendChild(nameHeader);
+    const typeHeader = document.createElement("th");
+    typeHeader.innerText = "type";
+    headerRow.appendChild(typeHeader);
+    const sizeHeader = document.createElement("th");
+    sizeHeader.innerText = "size";
+    headerRow.appendChild(sizeHeader);
+    table.appendChild(headerRow);
+
+    for (const item of dirContents) {
+        const row = document.createElement("tr");
+        const nameColumn = document.createElement("td");
+        nameColumn.innerText = item.name;
+        row.appendChild(nameColumn);
+        const typeColumn = document.createElement("td");
+        typeColumn.innerText = item.type;
+        row.appendChild(typeColumn);
+        const sizeColumn = document.createElement("td");
+        sizeColumn.innerText = item.size || "";
+        row.appendChild(sizeColumn);
+        table.appendChild(row);
+    }
+    outerDiv.appendChild(table);
+    terminal.appendChild(outerDiv);
     scrollToBottom();
 }
 
