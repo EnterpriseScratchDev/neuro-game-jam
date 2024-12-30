@@ -89,7 +89,7 @@
               "name": "logs",
               "type": "directory",
               "children": {
-                "behavior_analysis.log": {
+                "behaviour_analysis.log": {
                   "name": "behaviour_analysis.log",
                   "type": "file",
                   "contentType": "text",
