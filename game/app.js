@@ -70,7 +70,7 @@ wss.on("listening", () => {
 
 const vfs = VFileSystem.fromJsonString(JSON.stringify(vfsObj));
 
-const neuroIntegration = new NeuroIntegration(`ws://localhost:${config.neuroApiPort}`);
+const neuroIntegration = new NeuroIntegration(config.neuroApiAddress);
 neuroIntegration.onStatusChange(status => {
     console.info(`NeuroIntegration status is now ${status}`);
 });

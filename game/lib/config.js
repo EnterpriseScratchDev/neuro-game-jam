@@ -4,12 +4,12 @@ const path = require("path");
 /**
  * @typedef GameConfig
  * @prop {number} serverPort the port that the HTML is served on and that the websocket server listens on
- * @prop {number} neuroApiPort the port that the Neuro Game API is listening on
+ * @prop {number} neuroApiAddress the address that the Neuro Game API is listening on
  */
 
 /** @type GameConfig */
 const defaultConfig = {
-    serverPort: 3000, neuroApiPort: 8000
+    serverPort: 3000, neuroApiAddress: "ws://localhost:8000" 
 };
 
 const configPath = path.resolve(process.cwd(), "config.json");

@@ -1,4 +1,4 @@
 {
   "serverPort": 3000,
-  "neuroApiPort": 8000
+  "neuroApiAddress": "ws://localhost:8000"
 }
