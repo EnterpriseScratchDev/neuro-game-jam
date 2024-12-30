@@ -235,8 +235,12 @@ class NeuroIntegration {
                 this.onStatusChangeCallback(newStatus);
             }
 
-            console.error(`NeuroIntegration WebSocket closed; reconnecting after ${this.reconnectTime / 1000} seconds...`);
-            setTimeout(() => this.connect(), this.reconnectTime);
+            if (this.gameStarted) {
+                console.error(`NeuroIntegration WebSocket closed; reconnecting after ${this.reconnectTime / 1000} seconds...`);
+                setTimeout(() => this.connect(), this.reconnectTime);
+            } else {
+                console.error("NeuroIntegration failed to connect. If an AI is playing, please restart the game after they're ready to connect.");
+            }
         };
     }
 
