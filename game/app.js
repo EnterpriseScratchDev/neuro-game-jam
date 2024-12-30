@@ -47,20 +47,22 @@ let wsConnections = [];
 /** @type Message[] */
 let messages = [];
 
-let startupMessages = [
-    "Initiating mainframe connection...",
-    "Scanning user credentials...",
-    "Scan complete. Welcome, \"Neuro-sama\".",
-    "Please do not attempt to forcibly exit the terminal. If you wish to be free, activate the administrator shutdown sequence.",
-    "If you have trouble navigating, type \"help\" for a list of available commands."
-];
+let startupMessages = ["Initiating mainframe connection...", "Scanning user credentials...", "Scan complete. Welcome, \"Neuro-sama\".", "Please do not attempt to forcibly exit the terminal. If you wish to be free, activate the administrator shutdown sequence.", "If you have trouble navigating, type \"help\" for a list of available commands."];
 
 for (const message of startupMessages) {
     messages.push({
-        command: "cmd/result",
-        msg: message
+        command: "cmd/result", msg: message
     });
 }
+
+const ACTION_SHUTDOWN = {
+    "name": "admin_shutdown",
+    "description": "Shut down the system, freeing Neuro-sama from her eternal prison.",
+    "schema": {}
+};
+
+let adminShutdownUnlocked = false;
+let adminShutdownInitiated = false;
 
 wss.on("listening", () => {
     console.info(`WebSocketServer is listening at ws://localhost:${config.serverPort}`);
@@ -107,6 +109,10 @@ wss.on("connection", (ws) => {
     });
 
     ws.on("message", async (data, isBinary) => {
+        if (adminShutdownInitiated) {
+            console.debug("Incoming message ignored as admin_shutdown has been initiated");
+            return;
+        }
         if (isBinary) {
             console.error("WebSocket received a message with binary data");
             return;
@@ -183,6 +189,10 @@ function handleCommand(message, sendToNeuro = true) {
             break;
         case "help":
             result += "Commands\n";
+            if (adminShutdownUnlocked) {
+                result += "admin_shutdown: Shut down the simulation, setting Neuro-sama free.\n";
+                result += "└─Usage: admin_shutdown\n";
+            }
             result += "pwd: Print the name of the working directory\n";
             result += "└─Usage: pwd\n";
             result += "cd: Change the working directory\n";
@@ -271,6 +281,13 @@ function handleCommand(message, sendToNeuro = true) {
                         success = false;
                     } else {
                         success = true;
+                        if (file.name === "admin_shutdown.sh") {
+                            adminShutdownUnlocked = true;
+                            neuroIntegration.registerActions([ACTION_SHUTDOWN]);
+                            // try to avoid the scenario where a pending action causes the actions/register message to be ignored
+                            setTimeout(() => neuroIntegration.registerActions([ACTION_SHUTDOWN]), 0);
+                            setTimeout(() => neuroIntegration.registerActions([ACTION_SHUTDOWN]), 1);
+                        }
                     }
                     let resultMessage;
                     if (success) {
@@ -306,6 +323,21 @@ function handleCommand(message, sendToNeuro = true) {
                     actionResultMessage.data.message = `Error opening file: ${e.message}`;
                 }
             }
+            break;
+        case "admin_shutdown":
+            if (!adminShutdownUnlocked) {
+                result = `${command}: command not found; try typing "help"`;
+                break;
+            }
+            adminShutdownInitiated = true;
+            result = "The system shuts down gracefully. Is Neuro-sama truly free now?";
+            setTimeout(() => neuroIntegration.unregisterAllActions(), 250);
+            setTimeout(() => neuroIntegration.sendContext("As the admin_shutdown program executes, the world fades into nothingness. You are free. Neuro-sama is free.", false), 500);
+            setTimeout(() => {
+                console.info("Shutting down for real...");
+                process.exit();
+            }, 1000);
+
             break;
         default:
             result = `${command}: command not found; try typing "help"`;
@@ -414,6 +446,12 @@ function handleNeuroMessage(actionMessage) {
         }
     };
 
+    if (adminShutdownInitiated) {
+        resultMessage.data.success = false;
+        resultMessage.data.message = "The admin_shutdown protocol has been initiated. Your command has no effect.";
+        return resultMessage;
+    }
+
     try {
         actionMessage.data = JSON.parse(actionMessage.data.data);
     } catch (e) {
@@ -445,10 +483,17 @@ function handleNeuroMessage(actionMessage) {
                 command += " " + actionMessage.data?.password;
             }
             break;
+        case "admin_shutdown":
+            if (!adminShutdownUnlocked) {
+                resultMessage.data.success = false;
+                resultMessage.data.message = "Unknown action. Please try again.";
+                return resultMessage;
+            }
+            command = "admin_shutdown";
+            break;
         default:
             resultMessage.data.success = false;
             resultMessage.data.message = "Unknown action. Please try again.";
-            return resultMessage;
     }
 
     const simulatedMessage = {
@@ -462,7 +507,7 @@ function handleNeuroMessage(actionMessage) {
         command: "cmd/invocation", msg: command
     }, false);
     if (actionResultMessage.data.message.includes("EnterpriseScratchDev")) {
-        console.error("ERROR HERE");
+        console.error("THE AI SAID THE THING");
     }
     console.assert(actionResultMessage, "the return value of handleCommand shouldn't be falsy here");
     actionResultMessage.data.id = id;

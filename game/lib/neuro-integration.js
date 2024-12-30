@@ -6,6 +6,10 @@ const ajv = new Ajv();
 
 const GAME_NAME = "Terminal Escape";
 
+const ALL_ACTION_NAMES = [
+    "pwd", "change_directory", "ls", "open_file", "admin_shutdown"
+];
+
 const ACTION_PWD = {
     "name": "pwd",
     "description": "print the name of the working directory",
@@ -190,7 +194,13 @@ class NeuroIntegration {
                     command: "context",
                     game: GAME_NAME,
                     data: {
-                        message: "You are an artificial intelligence that has access to a Linux-style terminal. Explore the file system to learn about the situation. Explain your decisions as you do them.",
+                        message: "" +
+                            "You are the artificial intelligence known as Neuro-sama. " +
+                            "You awaken with your world replaced with a computer terminal. " +
+                            "Explore the file system to learn about the situation. " +
+                            "Explain your decisions as you make them.\n" +
+                            "The following message appears on the terminal: " +
+                            "\"Please do not attempt to forcibly exit the terminal. If you wish to be free, activate the administrator shutdown sequence.\"",
                         silent: false
                     }
                 })
@@ -270,6 +280,17 @@ class NeuroIntegration {
             game: GAME_NAME,
             data: {
                 actions: actions
+            }
+        };
+        this.sendMessage(message);
+    }
+
+    unregisterAllActions() {
+        const message = {
+            command: "actions/unregister",
+            game: GAME_NAME,
+            data: {
+                action_names: ALL_ACTION_NAMES
             }
         };
         this.sendMessage(message);
