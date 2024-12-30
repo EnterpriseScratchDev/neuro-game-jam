@@ -1,3 +1,6 @@
+# Neuro-sama's Terminal Escape
+
+This game is available on [itch.io](https://enterprisescratchdev.itch.io/terminal-escape) and is part of [Neuro-sama Game Jam 2](https://itch.io/jam/neuro).
 
 ## Running from Source
 
