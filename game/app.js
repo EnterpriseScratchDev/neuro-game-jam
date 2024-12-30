@@ -395,10 +395,6 @@ function sendToAllWebSockets(message) {
     }
 }
 
-function initGame() {
-    resetGame();
-}
-
 function resetGame() {
     /** @type ResetMessage */
     const message = {
