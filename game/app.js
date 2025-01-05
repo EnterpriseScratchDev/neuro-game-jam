@@ -200,7 +200,7 @@ function handleCommand(message, sendToNeuro = true) {
             result += "ls: List the contents of the working directory\n";
             result += "└─Usage: ls\n";
             result += "open: View the contents of a file (password is only for password-protected files)\n";
-            result += "└─Usage: cd [file] [password]";
+            result += "└─Usage: open [file] [password]";
             break;
         case "pwd":
             result = vfs.curPath;
