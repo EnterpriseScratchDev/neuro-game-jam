@@ -9,16 +9,21 @@ const wsAddress = `ws://localhost:${window.location.port}`;
 /** @type {WebSocket} */
 let ws;
 
+/** @type {string[]} */
+let files = [];
+/** @type {string[]} */
+let directories = [];
+
 connectToWebSocket();
 
 input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
+        console.debug("Enter key pressed")
         if (!ws) {
             console.debug("WebSocket not yet connected");
             return;
         }
 
-        console.debug(event);
         const command = input.value;
         input.value = "";
 
@@ -29,6 +34,10 @@ input.addEventListener("keydown", (event) => {
             printError(`WebSocket error: ${err}`);
             console.error("WebSocket error when sending message", err);
         });
+    } else if (event.key === "Tab") {
+        console.debug("Tab key pressed")
+        event.preventDefault();
+        handleTabCompletion();
     }
 });
 
@@ -116,6 +125,12 @@ function handleMessage(message) {
         case "cmd/result":
             console.assert(typeof message.msg === "string", "Expected message with \"cmd/result\" command to have a string property called \"msg\"");
             printMessage(message.msg);
+            break;
+        case "context":
+            console.assert(message.files, "Expected message with \"context\" command to have a property called \"files\"");
+            console.assert(message.directories, "Expected message with \"context\" command to have a property called \"directories\"");
+            files = message.files;
+            directories = message.directories;
             break;
         case "reset":
             console.info("Terminal reset to initial state");
@@ -247,4 +262,64 @@ function scrollToBottom() {
     terminal.scrollTop = terminal.scrollHeight;
 }
 
+function handleTabCompletion() {
+    console.log(input.value, files, directories);
 
+    const currentText = input.value;
+    if (currentText.replaceAll(" ", "") === "") {
+        // Do nothing if there's only whitespace
+        return;
+    }
+
+    const tokens = currentText.split(" ");
+
+    if (tokens.length === 1) {
+        // A command has been (partially) entered
+        const validCommands = ["pwd", "ls", "cd", "open"];
+        const partialCommand = tokens[0];
+        if (validCommands.includes(partialCommand)) {
+            // A full command has been entered
+            input.value = currentText + " ";
+            return;
+        }
+        const candidateCommands = validCommands.filter(x => x.startsWith(partialCommand));
+        if (candidateCommands.length === 0) {
+            // No candidate commands
+            return;
+        }
+        input.value = longestCommonPrefix(candidateCommands);
+    } else if (tokens.length === 2) {
+        // A command has been entered
+        const command = tokens[0];
+        const partialArg = tokens[1];
+        if (command === "cd") {
+            const candidateDirectories = directories.filter(x => x.startsWith(partialArg));
+            console.debug("candidateDirectories:", candidateDirectories);
+            input.value = "cd " + longestCommonPrefix(candidateDirectories);
+        } else if (command === "open") {
+            const candidateFiles = files.filter(x => x.startsWith(partialArg));
+            console.debug("candidateFiles:", candidateFiles);
+            input.value = "open " + longestCommonPrefix(candidateFiles);
+        }
+    } else {
+        // Tab completion not available for this input
+    }
+}
+
+
+/**
+ * Find the longest common prefix string amongst an array of strings.
+ * @param {string[]} strings
+ * @return {string}
+ */
+function longestCommonPrefix(strings) {
+    if (!strings.length) return "";
+    let prefix = strings[0];
+    for (let i = 1; i < strings.length; i++) {
+        while (strings[i].indexOf(prefix) !== 0) {
+            prefix = prefix.substring(0, prefix.length - 1);
+            if (!prefix) return "";
+        }
+    }
+    return prefix;
+}

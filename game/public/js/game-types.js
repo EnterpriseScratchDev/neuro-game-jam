@@ -5,7 +5,7 @@
 
 /**
  * @typedef Message
- * @type {ResetMessage | CommandInvovationMessage | CommandResultMessage | TransferStateMessage}
+ * @type {ResetMessage | CommandInvovationMessage | CommandResultMessage | ContextUpdateMessage | TransferStateMessage}
  */
 
 /**
@@ -36,6 +36,16 @@
  * @extends BaseMessage
  * @property {"cmd/result"} command
  * @property {string} msg the line(s) of text to be printed on the terminal
+ */
+
+/**
+ * This message includes the names of the files and directories in the current directory.
+ *
+ * @typedef ContextUpdateMessage
+ * @extends BaseMessage
+ * @property {"context"} command
+ * @property {string[]} files
+ * @property {string[]} directories
  */
 
 /**

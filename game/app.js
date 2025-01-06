@@ -70,6 +70,8 @@ wss.on("listening", () => {
 
 const vfs = VFileSystem.fromJsonString(JSON.stringify(vfsObj));
 
+updateWorkingDirectoryContext();
+
 const neuroIntegration = new NeuroIntegration(config.neuroApiAddress);
 neuroIntegration.onStatusChange(status => {
     console.info(`NeuroIntegration status is now ${status}`);
@@ -377,6 +379,32 @@ function handleChangeDirectory(directory) {
     }
     console.debug(`handleChangeDirectory() >> trying to change from from "${vfs.curPath}" to ${newPath}`);
     vfs.changeDirectory(newPath);
+    updateWorkingDirectoryContext();
+}
+
+function updateWorkingDirectoryContext() {
+    const files = [];
+    const directories = [];
+    for (const prop in vfs.curDir.children) {
+        if (Object.prototype.hasOwnProperty.call(vfs.curDir.children, prop)) {
+            /** @type {VFile | VDirectory} */
+            const child = vfs.curDir.children[prop];
+            if (child.type === "file") {
+                files.push(child.name);
+            } else if (child.type === "directory") {
+                directories.push(child.name);
+            } else {
+                throw new Error(`Invalid VFS object, type is "${child.type}"`);
+            }
+        }
+    }
+    const contextMessage = {
+        command: "context",
+        files: files,
+        directories: directories
+    };
+    messages.push(contextMessage);
+    sendToAllWebSockets(JSON.stringify(contextMessage));
 }
 
 /**
