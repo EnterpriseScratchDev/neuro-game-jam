@@ -69,6 +69,10 @@ wss.on("listening", () => {
 });
 
 const vfs = VFileSystem.fromJsonString(JSON.stringify(vfsObj));
+if (!vfs) {
+    console.error("Failed to load virtual file system");
+    process.exit(1);
+}
 
 updateWorkingDirectoryContext();
 
